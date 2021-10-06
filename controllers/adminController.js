@@ -3,21 +3,41 @@ const Category = require("../models/Category");
 module.exports = {
   // Dashboard
   viewDashboard: (req, res) => {
-    res.render("admin/dashboard/view_dashboard");
+    res.render("admin/dashboard/view_dashboard", {
+      title: "Fakesion | Dashboard",
+    });
   },
 
   // Category
   viewCategory: async (req, res) => {
-    const category = await Category.find();
-    res.render("admin/category/view_category", { category });
+    try {
+      const category = await Category.find();
+      const alertMessage = req.flash("alertMessage");
+      const alertStatus = req.flash("alertStatus");
+      const alert = { message: alertMessage, status: alertStatus };
+
+      res.render("admin/category/view_category", {
+        category,
+        alert,
+        title: "Fakesion | Category",
+      });
+    } catch (error) {
+      res.redirect("/admin/category");
+    }
   },
   addCategory: async (req, res) => {
     try {
       const { name } = req.body;
       await Category.create({ name });
 
+      req.flash("alertMessage", "Success Add Category");
+      req.flash("alertStatus", "success");
+
       res.redirect("/admin/category");
     } catch (error) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+
       res.redirect("/admin/category");
     }
   },
@@ -29,32 +49,48 @@ module.exports = {
       category.name = name;
       await category.save();
 
+      req.flash("alertMessage", "Success Edit Category");
+      req.flash("alertStatus", "success");
+
       res.redirect("/admin/category");
     } catch (errror) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+
       res.redirect("/admin/category");
     }
   },
   deletCategory: async (req, res) => {
-    const { id } = req.params;
-    const category = await Category.findOne({ _id: id });
+    try {
+      const { id } = req.params;
+      const category = await Category.findOne({ _id: id });
 
-    await category.remove();
+      await category.remove();
 
-    res.redirect("/admin/category");
+      req.flash("alertMessage", "Success Delete Category");
+      req.flash("alertStatus", "success");
+
+      res.redirect("/admin/category");
+    } catch (error) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+
+      res.redirect("/admin/category");
+    }
   },
 
   // Bank
   viewBank: (req, res) => {
-    res.render("admin/bank/view_bank");
+    res.render("admin/bank/view_bank", { title: "Fakesion | Bank" });
   },
 
   // Item
   viewItem: (req, res) => {
-    res.render("admin/item/view_item");
+    res.render("admin/item/view_item", { title: "Fakesion | Item" });
   },
 
   // Booking
   viewBooking: (req, res) => {
-    res.render("admin/booking/view_booking");
+    res.render("admin/booking/view_booking", { title: "Fakesion | Booking" });
   },
 };
