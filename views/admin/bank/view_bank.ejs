@@ -10,6 +10,7 @@
       <%- include('../../partials/navbar.ejs') %>
       <!-- Begin Page Content -->
       <div class="container-fluid">
+        <%- include('../../partials/message.ejs') %>
         <!-- Page Heading -->
         <h1 class="h3 mb-4 text-gray-800">Bank</h1>
         <!-- End Heading -->
@@ -65,4 +66,20 @@
     </div>
   </div>
 </div>
-<%- include('../../partials/js.ejs') %>
+<%- include('../../partials/js.ejs') %> <%- include('add_bank.ejs') %> <%-
+include('edit_bank.ejs') %>
+
+<script>
+  $("#dataTable").on("click", ".button-update", function () {
+    let id = $(this).data("id");
+    let name = $(this).data("name");
+    let nameBank = $(this).data("namebank");
+    let nomorRekening = $(this).data("nomorrekening");
+
+    $("#editModal").modal("show");
+    $(".id").val(id);
+    $(".name").val(name);
+    $(".nameBank").val(nameBank);
+    $(".nomorRekening").val(nomorRekening);
+  });
+</script>
