@@ -375,6 +375,14 @@ module.exports = {
     try {
       const { id } = req.params;
       const item = await Item.findOne({ _id: id }).populate("imageId");
+      const category = await Category.findOne({ _id: item.categoryId });
+
+      for (let i = 0; i < category.itemId.length; i++) {
+        if (category.itemId[i]._id.toString() === item._id.toString()) {
+          category.itemId.pull({ _id: item._id });
+          await category.save();
+        }
+      }
 
       for (let i = 0; i < item.imageId.length; i++) {
         Image.findOne({ _id: item.imageId[i].id })
