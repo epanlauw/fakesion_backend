@@ -4,15 +4,79 @@ const Item = require("../models/Item");
 const Image = require("../models/Image");
 const Feature = require("../models/Feature");
 const Activity = require("../models/Activity");
+const User = require("../models/Users");
 const fs = require("fs-extra");
 const path = require("path");
+const bycrypt = require("bcrypt");
 
 module.exports = {
+  //Login
+  viewSignin: async (req, res) => {
+    try {
+      const alertMessage = req.flash("alertMessage");
+      const alertStatus = req.flash("alertStatus");
+      const alert = { message: alertMessage, status: alertStatus };
+      if (req.session.user == null || req.session.user == undefined) {
+        res.render("index", {
+          alert,
+          title: "Fakesion | Login",
+        });
+      } else {
+        res.redirect("/admin/dashboard");
+      }
+    } catch (error) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+
+      res.redirect("/admin/signin");
+    }
+  },
+  actionSignin: async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      const user = await User.findOne({ username: username });
+
+      if (!user) {
+        req.flash("alertMessage", "User/Password salah");
+        req.flash("alertStatus", "danger");
+
+        res.redirect("/admin/signin");
+      }
+
+      const isPasswordMatch = await bycrypt.compare(password, user.password);
+      if (!isPasswordMatch) {
+        req.flash("alertMessage", "User/Password salah");
+        req.flash("alertStatus", "danger");
+
+        res.redirect("/admin/signin");
+      }
+
+      req.session.user = {
+        id: user.id,
+        username: user.username,
+      };
+
+      res.redirect("/admin/dashboard");
+    } catch (error) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+
+      res.redirect("/admin/signin");
+    }
+  },
+  actionLogout: (req, res) => {
+    req.session.destroy();
+    res.redirect("/admin/signin");
+  },
+
   // Dashboard
   viewDashboard: (req, res) => {
-    res.render("admin/dashboard/view_dashboard", {
-      title: "Fakesion | Dashboard",
-    });
+    try {
+      res.render("admin/dashboard/view_dashboard", {
+        title: "Fakesion | Dashboard",
+        user: req.session.user,
+      });
+    } catch (error) {}
   },
 
   // Category
@@ -27,6 +91,7 @@ module.exports = {
         category,
         alert,
         title: "Fakesion | Category",
+        user: req.session.user,
       });
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
@@ -101,6 +166,7 @@ module.exports = {
         title: "Fakesion | Bank",
         alert,
         bank,
+        user: req.session.user,
       });
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
@@ -212,6 +278,7 @@ module.exports = {
         alert,
         item,
         action: "view",
+        user: req.session.user,
       });
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
@@ -429,6 +496,7 @@ module.exports = {
         itemId,
         feature,
         activity,
+        user: req.session.user,
       });
 
       console.log(itemId);
@@ -644,6 +712,7 @@ module.exports = {
     try {
       res.render("admin/booking/view_booking", {
         title: "Fakesion | Booking",
+        user: req.session.user,
       });
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
