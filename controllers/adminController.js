@@ -72,13 +72,22 @@ module.exports = {
   },
 
   // Dashboard
-  viewDashboard: (req, res) => {
+  viewDashboard: async (req, res) => {
     try {
+      const member = await Member.find();
+      const booking = await Booking.find();
+      const item = await Item.find();
+
       res.render("admin/dashboard/view_dashboard", {
         title: "Fakesion | Dashboard",
         user: req.session.user,
+        member,
+        booking,
+        item,
       });
-    } catch (error) {}
+    } catch (error) {
+      res.redirect("/admin/dashboard");
+    }
   },
 
   // Category
