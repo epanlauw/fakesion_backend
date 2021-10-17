@@ -4,5 +4,6 @@ const { upload, uploadMultiple } = require("../middlewares/multer");
 
 /* Landing Page */
 router.get("/landing-page", apiController.landingPage);
+router.get("/detail-page/:id", apiController.detailPage);
 
 module.exports = router;
