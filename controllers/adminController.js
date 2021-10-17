@@ -354,6 +354,7 @@ module.exports = {
         alert,
         item,
         action: "show-image",
+        user: req.session.user,
       });
     } catch (error) {
       req.flash("alertMessage", `${error.message}`);
