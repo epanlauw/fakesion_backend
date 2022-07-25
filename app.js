@@ -10,7 +10,7 @@ const flash = require("connect-flash");
 // import mongoose
 const mongoose = require("mongoose");
 mongoose.connect(
-  "mongodb+srv://codeathome:fakesion@cluster0.eybya.mongodb.net/fakesion-db?retryWrites=true&w=majority",
+  "mongodb+srv://codeathome:fakesion@cluster0.eybya.mongodb.net/?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
